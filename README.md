@@ -8,7 +8,7 @@ Handy for debugging and testing. The official MQ Light admin console don't print
 2. Build/Run the app
 ```
 npm install
-node index.js
-```
+node index.js```
+
 3. Open http://localhost:3333/ in browser
 
