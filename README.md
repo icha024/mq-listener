@@ -6,7 +6,9 @@ Handy for debugging and testing. The official MQ Light admin console don't print
 
 1. Start MQ Light locally or edit the code to add remote address/credentials
 2. Build/Run the app
-```npm install
-node index.js```
+```
+npm install
+node index.js
+```
 3. Open http://localhost:3333/ in browser
 
