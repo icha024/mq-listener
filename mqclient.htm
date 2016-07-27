@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.min.js"></script>
+<style>
+    .item-title {
+        display: block;
+    }
+    
+    .navbar {
+        padding-left: 10vw;
+        padding-right: 20vw;
+        color: white;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
+    
+    .container {
+        padding-left: 10vw;
+        padding-right: 10vw;
+    }
+    
+    .search-box {
+        color: black;
+    }
+    
+    div {
+        opacity: 1;
+    }
+    
+    div.ng-enter {
+        -webkit-transition: 1s;
+        transition: 1s;
+        opacity: 0;
+    }
+    
+    div.ng-enter-active {
+        opacity: 1;
+    }
+</style>
+
+<body>
+
+    <div ng-app="myApp" ng-controller="myCtrl">
+        <nav class="clearfix navbar navbar-default navbar-static-top">
+            <span class="pull-left">
+                <h2>MQ Listener</h2>
+                Received messages <span class="badge">{{ messages.length }}</span>
+            </span>
+            <span class="pull-right">
+                <br/>
+                <label>Filter: <input class="search-box" ng-model="searchText"></label>
+            </span>
+        </nav>
+        <div class="container row">
+            <div class="list-group">
+                <div class="list-group-item clearfix" ng-repeat="msg in messages | filter:searchText | orderBy:'-date'">
+                    <span class="item-title">
+                        <b>{{ msg.date.toString().substring(16, 24) }}</b> <i>({{ formatMoment(msg.date) }})</i> <span class="label label-primary pull-right clearfix">{{ msg.data.topic }}</span>
+                    </span>
+                    <span>{{ msg.data.data }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script>
+var app = angular.module("myApp", ['ngAnimate']) 
+app.controller("myCtrl", function($scope) {
+    $scope.messages = []
+    $scope.formatMoment = function(date) {
+        // console.debug("Moment Date: " + date)
+        return moment(date).fromNow()
+    }
+
+    var socket = io('http://localhost:3333');
+    socket.on('connect', function () {
+        socket.on('message', function (msg) {
+            console.debug("Received: " + msg)
+            $scope.$apply($scope.messages.push({data: msg, date: new Date()}))
+        });
+    });
+
+    setInterval(function() {
+        console.debug("refreshing...")
+        $scope.$apply($scope.data); //this triggers a $digest
+    }, 10000);
+})
+</script>
+</body>
+
+</html>
